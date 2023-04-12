@@ -1,55 +1,241 @@
+
 import React, { useState } from "react";
 import axios from 'axios';
-
 function FlightComponent() {
   const [activeTab, setActiveTab] = useState(0);
   const [userNameInput, setUserNameInput] = useState("");
-  const [flightNumInput, setFlightNumInput] = useState("");
+  const [deleteUserName, setDeleteUserName] = useState("");
   const [updateAirlineID, setUpdateAirlineID] = useState("");
   const [updateFlightID, setUpdateFlightID] = useState("");
   const [searchUpdate, setSearchUpdate] = useState("");
   const [complexSearch1, setComplexSearch1] = useState("");
   const [complexSearch2, setComplexSearch2] = useState("");
-  //fetch()
-  //fetch(`/`).then((response) => response.json());
+  const [currentTable,setCurrentTable] = useState("");
+  const [outputMessage, setOutputMessage] = useState("");
+  // var user = "hello";
+  // var password = "21321";
+  // // since we used the proxy, the baseurl will be our proxy
+  // //'Referrer-Policy': /no-referrer'
+  // const params = {
+  //   user:user,
+  //   password: 'password'
+  // }
+  // const options = {
+  //   method: "POST",
+  //   body: JSON.stringify(params)
+  // }
+  // fetch(`http://localhost:8080/insertUser/`,options).then((response) => response.json());
+  //fetch(`/deleteUser` + user).then((response) => response.json());
+  //fetch(`/insertUser` + user).then((response) => response.json());
   const handleTabClick = (index) => {
     setActiveTab(index);
   };
-axios.baseURL="http://localhost:1030";
-// axios.portNumber
-axios.get('/')
-    .then(res => {
-        console.log(res.data)
-  }).catch(err => console.error(err))
-  const handleTab1Submit = () => {
+// axios.baseURL="http://localhost:1030";
+// // axios.portNumber
+// axios.get('/')
+//     .then(res => {
+//         console.log(res.data)
+//   }).catch(err => console.error(err))
+  async function handleTab1Submit() {
     // handle submit logic here
     setUserNameInput(userNameInput);
+    const returnUserName = userNameInput;
+    // const params = {
+    //   user: returnUserName,
+    //   password: '12312321'
+    // }
+    // const options = {
+    //   method: "POST",
+    //   body: JSON.stringify(params),
+    //   mode: "cors"
+    // }
+    // http://localhost:8080/insertUser + '/' + userNameInput + '/' + 12321
+    // fetch(`http://localhost:8080/insertUser?userLogin=${userNameInput}&password=${"12321"}`, {
+    //   method: "POST",
+    //   mode: "cors"
+    // }).then((response) => console.log(response.json()));
+
+    try {
+      await axios.post("http://localhost:8080/addUser/", {
+        data: {user:returnUserName,
+        password:"1234"},
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+
+    try {
+      let arr = []
+      await axios.get("http://localhost:8080/getUser/")
+        .then((res) => {arr = res.data}).catch((err) => console.log(err));
+      //currentTable = response.data
+      console.log(arr)
+      let data = "";
+      arr.map((entry)=>{ return(data += '\n' + entry['LoginID'] + '\t' + entry['Password'] + '\n');})
+      console.log(data);
+      await setCurrentTable(data);
+      setOutputMessage("Added user successfully!");
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+    }
   };
 
-  const handleTab2Submit = () => {
+  async function handleTab2Submit() {
     // handle submit logic here
-    setFlightNumInput(flightNumInput);
+    setDeleteUserName(deleteUserName)
+    const returnDeleteUserName = deleteUserName;
+    try {
+      await axios.delete("http://localhost:8080/deleteUser/", {
+        data: {user:returnDeleteUserName},
+      });
+      setOutputMessage("Deleted user successfully!");
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+    }
+
+    try {
+      let arr = []
+      await axios.get("http://localhost:8080/getUser/")
+        .then((res) => {arr = res.data}).catch((err) => console.log(err));
+      //currentTable = response.data
+      console.log(arr)
+      let data = "";
+      arr.map((entry)=>{ return(data += '\n' + entry['LoginID'] + '\t' + entry['Password'] + '\n');})
+      console.log(data);
+      await setCurrentTable(data);
+      setOutputMessage("Deleted user successfully!")
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+    }
+    // const returnDeleteUserName = deleteUserName;
+    // const params = {
+    //   user:returnDeleteUserName,
+    //   }
+    //   const options = {
+    //     method: "DELETE",
+    //     body: JSON.stringify(params)
+    //     }
+    //   return fetch(`http://localhost:8080/deleteUser/`,options).then((response) => response.json());
   };
 
-  const handleTab3Submit = () => {
+  async function handleTab3Submit() {
     // handle submit logic here
     setUpdateAirlineID(updateAirlineID);
     setUpdateFlightID(updateFlightID);
+    const returnUpdateFlightID = updateFlightID;
+    const returnUpdateAirlineID = updateAirlineID;
+    try {
+      await axios.put("http://localhost:8080/updateFlight/", {
+        data: {airlineID:returnUpdateAirlineID,
+                  flightID:returnUpdateFlightID},
+      });
+      setCurrentTable()
+      setOutputMessage("Updated flight successfully!");
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+    }
+    try {
+      let arr = []
+      await axios.get("http://localhost:8080/getFlight/")
+        .then((res) => {arr = res.data}).catch((err) => console.log(err));
+      //currentTable = response.data
+      console.log(arr)
+      let data = "";
+      arr.map((entry)=>{ return(data += '\n' + entry['AirportID'] + '\t' + entry['FlightID'] + '\n');})
+      console.log(data);
+      await setCurrentTable(data);
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+    }
   };
 
-  const handleTab4Submit = () => {
-    // handle submit logic here
+  async function handleTab4Submit() {
     setSearchUpdate(searchUpdate);
+    const returnSearchUpdate = searchUpdate;
+
+    // handle submit logic here
+    try {
+      let arr = []
+      await axios.post("http://localhost:8080/searchAirport/", {
+        data: {airportID:returnSearchUpdate},
+      }).then((res) => {arr = res.data}).catch((err) => console.log(err));
+      //currentTable = response.data
+      
+      console.log(arr)
+      let data = "";
+      arr.map((entry)=>{ return(data += '\n' + entry['AirportID'] + '\t' + entry['FlightID'] + '\n');})
+      
+      await setCurrentTable(data);
+      setOutputMessage("Searched Airport successfully!");
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+    }
   };
 
-  const handleTab5Submit = () => {
+  async function handleTab5Submit(){
     // handle submit logic here
     setComplexSearch1(complexSearch1);
+    const returnComplexSearch1 = complexSearch1;
+     try {
+      let arr = []
+      await axios.post("http://localhost:8080/searchNAirport/", {
+        data: {count:returnComplexSearch1},
+      }).then((res) => {arr = res.data}).catch((err) => console.log(err));
+      //currentTable = response.data
+      console.log(arr)
+      let data = "";
+      arr.map((entry)=>{ return(data += '\n' + entry['Airports'] + '\t' + entry['City'] +'t' +entry['Count'] + '\n');})
+      console.log(data);
+      await setCurrentTable(data);
+      setOutputMessage("Searched Airports successfully!");
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+      }
   };
 
-  const handleTab6Submit = () => {
+  async function handleTab6Submit() {
     // handle submit logic here
     setComplexSearch2(complexSearch2);
+    const returnComplexSearch2 = complexSearch2;
+     try {
+      let arr = []
+      await axios.post("http://localhost:8080/flightDepartArrive/", {
+        data: {airportID:returnComplexSearch2},
+      }).then((res) => {arr = res.data}).catch((err) => console.log(err));
+       let data = "";
+      arr.map((entry)=>{ return(data += '\n' + entry['AirportID'] + '\t' + entry['FlightID'] + '\n');})
+      //currentTable = response.data
+      console.log(currentTable)
+      await setCurrentTable(data);
+      setOutputMessage("Searched Flights Departing and Arriving successfully!");
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+    }
   };
 
   const renderTabs = () => {
@@ -83,12 +269,12 @@ axios.get('/')
       case 1:
         return (
           <div>
-            <h2>Delete Flight with Flight Number</h2>
+            <h2>Delete User</h2>
             <input
               type="text"
-              placeholder="Enter Flight Number"
-              value={flightNumInput}
-              onChange={(e) => setFlightNumInput(e.target.value)}
+              placeholder="Enter username"
+              value={deleteUserName}
+              onChange={(e) => setDeleteUserName(e.target.value)}
             />
             <button onClick={handleTab2Submit}>Button</button>
           </div>
@@ -150,6 +336,9 @@ axios.get('/')
       <h1>Flight Information</h1>
       <div>{renderTabs()}</div>
       <div>{renderPage()}</div>
+      <div>!! For collections with a lot of entries we printed out the data that makes it most unique !!</div>
+      <div>{outputMessage}</div>
+      <div>{currentTable}</div>
     </div>
   );
 }
