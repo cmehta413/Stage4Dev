@@ -222,8 +222,12 @@ app.post('/flightDepartArrive', function(req, res) {
 //     console.log(result);
 //   });
 // });
-
-
+// bypass no CORS instruction
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.listen(8080, function (err) {
   if(err) console.log(err);

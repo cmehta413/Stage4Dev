@@ -203,7 +203,7 @@ function FlightComponent() {
       //currentTable = response.data
       console.log(arr)
       let data = "";
-      arr.map((entry)=>{ return(data += '\n' + entry['Airports'] + '\t' + entry['City'] +'t' +entry['Count'] + '\n');})
+      arr.map((entry)=>{ return(data += '\n' + entry['Airports'] + '\t' + entry['City'] +'\t' +entry['Count'] + '\n');})
       console.log(data);
       await setCurrentTable(data);
       setOutputMessage("Searched Airports successfully!");
@@ -225,7 +225,8 @@ function FlightComponent() {
         data: {airportID:returnComplexSearch2},
       }).then((res) => {arr = res.data}).catch((err) => console.log(err));
        let data = "";
-      arr.map((entry)=>{ return(data += '\n' + entry['AirportID'] + '\t' + entry['FlightID'] + '\n');})
+      arr.map((entry)=>{ return(data += entry["Destination_Airport"] + "\t" + entry['Air_Time'] +"\n")})
+      console.log(arr)
       //currentTable = response.data
       console.log(currentTable)
       await setCurrentTable(data);
