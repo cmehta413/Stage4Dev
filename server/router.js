@@ -190,6 +190,40 @@ app.post('/flightDepartArrive', function(req, res) {
     }
   });
 });
+
+app.get('/storedProcedure', function(req, res) { //new function
+  var query = `Select * from NewTable1`
+  connection.query(query, function(err, result, fields) {
+    if (err) {
+      console.log("error in flight");
+      return;
+    }
+    else {
+    res.json(result)
+    return;
+    }
+  });
+});
+app.post('/flightTriggerResponse', function(req, res) { //new function
+  //Add sql insert based on query fields: flightID, airlineID, originAirport, destination, year, month,
+  //day, scheduledDeparture, departureTime, scheduledArrivalTime, arrivalTime
+
+//after, return results from new table.
+
+  var query = `Select * from Newtable;`
+  connection.query(query, function(err, result, fields) {
+    if (err) {
+      console.log("error in flight");
+      return;
+    }
+    else {
+    res.json(result)
+    return;
+    }
+  });
+});
+
+
 // getQueryTab3 = function (airLineID, FlightID) {
 //     var query = 'UPDATE flight SET AIRLINE_ID =  (${airLineID}) WHERE Flight_ID = (${FlightID})'
 
