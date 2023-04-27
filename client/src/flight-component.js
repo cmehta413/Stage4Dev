@@ -281,7 +281,7 @@ function FlightComponent() {
   async function handleTab7Submit() { //new tab, handles the stored procedure which is static
     try {
       let arr = []
-      await axios.get("http://localhost:8080/storedProcedure/").then((res) => {arr = res.data}).catch((err) => console.log(err));
+      await axios.get("http://localhost:8080/storedProcedure1/").then((res) => {arr = res.data}).catch((err) => console.log(err));
        let data = "";
       // arr.map((entry)=>{ return(data += entry["Destination_Airport"] + "\t" + entry['Air_Time'] +"\n")})
       // console.log(arr)
@@ -334,6 +334,25 @@ function FlightComponent() {
       // console.log(currentTable)
       // await setCurrentTable(data);
       // setOutputMessage("Searched Flights Departing and Arriving successfully!");
+    } catch (error) {
+      setOutputMessage("Error occurred: " + error);
+      setCurrentTable("");
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async function handleTab9Submit() { //new tab, handles the stored procedure which is static
+    try {
+      let arr = []
+      await axios.get("http://localhost:8080/storedProcedure2/").then((res) => {arr = res.data}).catch((err) => console.log(err));
+       let data = "";
+      // arr.map((entry)=>{ return(data += entry["Destination_Airport"] + "\t" + entry['Air_Time'] +"\n")})
+      // console.log(arr)
+      // //currentTable = response.data
+      // console.log(currentTable)
+      // await setCurrentTable(data);
+      // setOutputMessage("Searched Flights Departing and Arriving successfully!");//dont know the fields for this.
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -457,9 +476,21 @@ function FlightComponent() {
               </div>
             </div>
           );
+
+          case 8: //new tab
+        return (
+          <div>
+            <h2 style={styles.header}>What Airlines have the most delays ?
+            </h2>
+            <div style={styles.container}>
+            <Button variant="contained" onClick={handleTab9Submit}>Click to find out!</Button>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
+    
   };
   return (
     <div>
@@ -479,6 +510,7 @@ function FlightComponent() {
           <Button onClick={() => handleTabClick(5)}>Flights Departing and Arriving</Button>
           <Button onClick={() => handleTabClick(6)}>Which days are best for traveling?</Button>
           <Button onClick={() => handleTabClick(7)}>Enter new flight information</Button>
+          <Button onClick={() => handleTabClick(8)}>Which Airlines have the worst delays?</Button>
         </ButtonGroup>
         </div>
       </AppBar>

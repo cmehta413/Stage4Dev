@@ -191,7 +191,7 @@ app.post('/flightDepartArrive', function(req, res) {
   });
 });
 
-app.get('/storedProcedure', function(req, res) { //new function
+app.get('/storedProcedure1', function(req, res) { //new function
   var query = `Select * from NewTable1`
   connection.query(query, function(err, result, fields) {
     if (err) {
@@ -204,13 +204,30 @@ app.get('/storedProcedure', function(req, res) { //new function
     }
   });
 });
+
+app.get('/storedProcedure2', function(req, res) { //new function
+  var query = `Select * from NewTable`
+  connection.query(query, function(err, result, fields) {
+    if (err) {
+      console.log("error in flight");
+      return;
+    }
+    else {
+    res.json(result)
+    return;
+    }
+  });
+});
+
 app.post('/flightTriggerResponse', function(req, res) { //new function
   //Add sql insert based on query fields: flightID, airlineID, originAirport, destination, year, month,
   //day, scheduledDeparture, departureTime, scheduledArrivalTime, arrivalTime
 
 //after, return results from new table.
 
-  var query = `Select * from Newtable;`
+  var query = `INSERT INTO flight(Flight_ID,AIRLINE_ID,ORIGIN_AIRPORT,DESTINATION_AIRPORT,YEAR,MONTH,DAY,TAIL_NUMBER,SCHEDULED_DEPARTURE,DEPARTURE_TIME,SCHEDULED_TIME,SCHEDULED_ARRIVAL,ARRIVAL_TIME)
+  VALUES ('${flightID}','${airlineID}','${originAirport}','${destinationAirport}',${year},${month},${day},'N400WN',${scheduledDeparture},${departureTime},${scheduledDeparture},${scheduledArrivalTime},${arrivalTime});
+  select * from flight where Flight_ID = 0007;`
   connection.query(query, function(err, result, fields) {
     if (err) {
       console.log("error in flight");
