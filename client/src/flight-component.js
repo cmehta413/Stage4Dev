@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { AppBar, Toolbar, Typography} from '@mui/material';
+import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 function FlightComponent() {
   const [activeTab, setActiveTab] = useState(0);
   const [userNameInput, setUserNameInput] = useState("");
@@ -14,7 +15,7 @@ function FlightComponent() {
   const [searchUpdate, setSearchUpdate] = useState("");
   const [complexSearch1, setComplexSearch1] = useState("");
   const [complexSearch2, setComplexSearch2] = useState("");
-  const [currentTable,setCurrentTable] = useState("");
+  const [currentTable,setCurrentTable] = useState();
   const [outputMessage, setOutputMessage] = useState("");
   const[triggerFlightID, setTriggerFlightID] = useState()
   const[triggerAirlineID, setTriggerAirlineID] =  useState()
@@ -67,7 +68,23 @@ function FlightComponent() {
   };
   const handleTabClick = (index) => {
     setActiveTab(index);
+    setCurrentTable(null)
   };
+
+  function DataGrid(strings ) {
+    console.log(strings)
+      return (
+        <Table>
+          <TableBody>
+            {strings.map((str, index) => (
+              <TableRow key={index}>
+                <TableCell>{str}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      );
+    }
 // axios.baseURL="http://localhost:1030";
 // // axios.portNumber
 // axios.get('/')
@@ -108,12 +125,13 @@ function FlightComponent() {
       await axios.get("http://localhost:8080/getUser/")
         .then((res) => {arr = res.data}).catch((err) => console.log(err));
       //currentTable = response.data
-      console.log(arr)
-      let data = "";
-      arr.map((entry)=>{ return(data += '\n' + entry['LoginID'] + '\t' + entry['Password'] + '\n');})
-      console.log(data);
-      await setCurrentTable(data);
-      setOutputMessage("Added user successfully!");
+      //console.log(arr)
+      var data=[]
+      arr.map((entry)=>{ return(data.push(entry['LoginID'] + ',' + entry['Password']));})
+      const table = DataGrid(data)
+      await setCurrentTable(table)
+      //await setCurrentTable(DataGrid(arr))
+      setOutputMessage("Added user successfully! List of users and passwords");
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -144,11 +162,10 @@ function FlightComponent() {
         .then((res) => {arr = res.data}).catch((err) => console.log(err));
       //currentTable = response.data
       console.log(arr)
-      let data = "";
-      arr.map((entry)=>{ return(data += '\n' + entry['LoginID'] + '\t' + entry['Password'] + '\n');})
-      console.log(data);
-      await setCurrentTable(data);
-      setOutputMessage("Deleted user successfully!")
+      let data = [];
+      arr.map((entry)=>{ return(data.push(entry['LoginID'] + ',' + entry['Password']));})
+      const table = DataGrid(data)
+      await setCurrentTable(table)
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -191,10 +208,11 @@ function FlightComponent() {
         .then((res) => {arr = res.data}).catch((err) => console.log(err));
       //currentTable = response.data
       console.log(arr)
-      let data = "";
-      arr.map((entry)=>{ return(data += '\n' + entry['AIRLINE_ID'] + '\t' + entry['Flight_ID'] + '\n');})
-      console.log(data);
-      await setCurrentTable(data);
+      let data = [];
+      arr.map((entry)=>{ return(data.push(entry['AIRLINE_ID'] + ',' + entry['Flight_ID']));})
+      const table = DataGrid(data)
+      await setCurrentTable(table)
+      setOutputMessage("AirlineID and FlightID shown below!");
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -216,11 +234,12 @@ function FlightComponent() {
       //currentTable = response.data
       
       console.log(arr)
-      let data = "";
-      arr.map((entry)=>{ return(data += '\n' + entry['ORIGIN_AIRPORT'] + '\t' + entry['Flight_ID'] + '\n');})
+      let data = [];
+      arr.map((entry)=>{ return(data.push(entry['DESTINATION_AIRPORT'] + ',' + entry['Flight_ID']));})
       
-      await setCurrentTable(data);
-      setOutputMessage("Searched Airport successfully!");
+      const table = DataGrid(data)
+      await setCurrentTable(table)
+      setOutputMessage("Destination airport and Flight ID shown below!");
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -240,11 +259,11 @@ function FlightComponent() {
       }).then((res) => {arr = res.data}).catch((err) => console.log(err));
       //currentTable = response.data
       console.log(arr)
-      let data = "";
-      arr.map((entry)=>{ return(data += '\n' + entry['Number_of_Airports'] + '\t' + entry['City'] +'\t' +entry['State'] + '\n');})
-      console.log(data);
-      await setCurrentTable(data);
-      setOutputMessage("Searched Airports successfully!");
+      let data = [];
+      arr.map((entry)=>{ return(data.push(entry['Number_of_Airports'] + ',' + entry['City'] +',' +entry['State']));})
+      const table = DataGrid(data)
+      await setCurrentTable(table)
+      setOutputMessage("Searched Airports successfully! Number of airports, City, and State is shown below.");
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -262,13 +281,13 @@ function FlightComponent() {
       await axios.post("http://localhost:8080/flightDepartArrive/", {
         data: {airportID:returnComplexSearch2},
       }).then((res) => {arr = res.data}).catch((err) => console.log(err));
-       let data = "";
-      arr.map((entry)=>{ return(data += entry["Destination_Airport"] + "\t" + entry['Air_Time'] +"\n")})
+       let data = [];
+      arr.map((entry)=>{ return(data.push(entry["Destination_Airport"] + "," + entry['Air_Time']))})
       console.log(arr)
       //currentTable = response.data
-      console.log(currentTable)
-      await setCurrentTable(data);
-      setOutputMessage("Searched Flights Departing and Arriving successfully!");
+      const table = DataGrid(data)
+      await setCurrentTable(table)
+      setOutputMessage("Searched Flights Departing and Arriving successfully! Destination Airport and Air time shown below");
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -282,13 +301,13 @@ function FlightComponent() {
     try {
       let arr = []
       await axios.get("http://localhost:8080/storedProcedure1/").then((res) => {arr = res.data}).catch((err) => console.log(err));
-       let data = "";
-      // arr.map((entry)=>{ return(data += entry["Destination_Airport"] + "\t" + entry['Air_Time'] +"\n")})
-      // console.log(arr)
-      // //currentTable = response.data
-      // console.log(currentTable)
-      // await setCurrentTable(data);
-      // setOutputMessage("Searched Flights Departing and Arriving successfully!");//dont know the fields for this.
+       let data = [];
+      arr.map((entry)=>{ return(data.push(entry["Day_Of_Month"] + "," + entry['Airport_name'] + "," + entry['Status_Delay']))})
+      console.log(arr)
+      //currentTable = response.data
+      const table = DataGrid(data)
+      await setCurrentTable(table)
+      setOutputMessage("Stored Procedure Operation Successful! Days of the month, Airport name, and Status Delay shown below.");//dont know the fields for this.
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -296,7 +315,6 @@ function FlightComponent() {
       throw error;
     }
   }
-
   async function handleTab8Submit() { //new table, handles the trigger. An insert is prompted and then the trigger is called. Return results of flight table or alternative output.
     setTriggerFlightID(triggerFlightID)
     setTriggerAirlineID(triggerAirlineID)
@@ -310,30 +328,31 @@ function FlightComponent() {
     setTriggerScheduledArrival(triggerScheduledArrival)
     setTriggerArrivalTime(triggerArrivalTime)
     //does stuff
+
+    var flightInfo = {
+      flightID:triggerFlightID,
+      airlineID: triggerAirlineID,
+      originAirport:triggerOriginAirport,
+      destinationAirport: triggerDestinationAirport,
+      year: triggerYear,
+      month:triggerMonth,
+      day:triggerDay,
+      scheduledDeparture:triggerScheduleDeparture,
+      departureTime:triggerDepartureTime,
+      scheduledArrivalTime:triggerScheduledArrival,
+      arrivalTime:triggerArrivalTime
+    }
     try {
       let arr = []
-      await axios.post("http://localhost:8080/flightTriggerResponse/", {
-        data: {
-          flightID:triggerFlightID,
-          airlineID: triggerAirlineID,
-          originAirport:triggerOriginAirport,
-          destinationAirport: triggerDestinationAirport,
-          year: triggerYear,
-          month:triggerMonth,
-          day:triggerDay,
-          scheduledDeparture:triggerScheduleDeparture,
-          departureTime:triggerDepartureTime,
-          scheduledArrivalTime:triggerScheduledArrival,
-          arrivalTime:triggerArrivalTime
-        },
-      }).then((res) => {arr = res.data}).catch((err) => console.log(err));
-      //  let data = "";
-      // arr.map((entry)=>{ return(data += entry["Destination_Airport"] + "\t" + entry['Air_Time'] +"\n")})
-      // console.log(arr)
-      // //currentTable = response.data
-      // console.log(currentTable)
-      // await setCurrentTable(data);
-      // setOutputMessage("Searched Flights Departing and Arriving successfully!");
+      await axios.post("http://localhost:8080/flightTriggerResponse/", {data:flightInfo}
+      ).then((res) => {arr = res.data}).catch((err) => console.log(err));
+      let data = []
+      data.push(flightInfo['flightID'] + "," + flightInfo['airlineID'] + "," + flightInfo['originAirport'] + "," + flightInfo['destinationAirport']  )
+      console.log(data)
+      //currentTable = response.data
+      const table = DataGrid(data)
+      await setCurrentTable(table)
+      setOutputMessage("FlightID, AirlineID, Origin Airport, and destinationAirport are shown below!");
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -341,18 +360,18 @@ function FlightComponent() {
       throw error;
     }
   }
-
   async function handleTab9Submit() { //new tab, handles the stored procedure which is static
     try {
       let arr = []
       await axios.get("http://localhost:8080/storedProcedure2/").then((res) => {arr = res.data}).catch((err) => console.log(err));
-       let data = "";
-      // arr.map((entry)=>{ return(data += entry["Destination_Airport"] + "\t" + entry['Air_Time'] +"\n")})
-      // console.log(arr)
-      // //currentTable = response.data
-      // console.log(currentTable)
-      // await setCurrentTable(data);
-      // setOutputMessage("Searched Flights Departing and Arriving successfully!");//dont know the fields for this.
+       let data = [];
+       arr.map((entry)=>{ return(data.push(entry["Airline"] + "," + entry['Percent_of_delays'] + "," + entry['Review'] + "\n"))})
+       console.log(arr)
+       //currentTable = response.data
+       const table = DataGrid(data)
+      await setCurrentTable(table)
+      setOutputMessage("Airline, Percent of delays, and reviews are shown below!");
+       //setOutputMessage("Stored Procedure Operation Successful!");//dont know the fields for this.
     } catch (error) {
       setOutputMessage("Error occurred: " + error);
       setCurrentTable("");
@@ -376,6 +395,8 @@ function FlightComponent() {
   //   }
   //   return tabs;
   // };
+
+  
 
   const renderPage = () => {
     switch (activeTab) {
@@ -417,7 +438,7 @@ function FlightComponent() {
             <h2 style={styles.header}>Search flight from Airport
             </h2>
             <div style={styles.container}>
-            <TextField  style={styles.input} id="filled-basic" label="Enter Airline ID" variant="filled" onChange={(e) => setSearchUpdate(e.target.value)} />
+            <TextField  style={styles.input} id="filled-basic" label="Enter Airport ID" variant="filled" onChange={(e) => setSearchUpdate(e.target.value)} />
            <Button variant="contained" onClick={handleTab4Submit}>Enter</Button>
             </div>
 

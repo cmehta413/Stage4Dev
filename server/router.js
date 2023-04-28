@@ -2,6 +2,14 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var mysql = require('mysql2');
 var path = require('path');
+const cors = require('cors');
+const corsOptions ={
+    origin:'http://localhost:3000',
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+
+// set up ejs view engine
 var connection = mysql.createConnection({
                 host: '34.28.95.92',
                 user: 'root',
@@ -29,7 +37,7 @@ connection.connect(function(err) {
 //       console.log(result);
 //     });
 var app = express();
-
+app.use(cors(corsOptions));
 // set up ejs view engine
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'ejs');
@@ -47,7 +55,7 @@ app.get('/getUser', async function(req, res)  {
       return;
     }
     else {
-    res.json(result)
+        res.json(result)
     return;
     }
   });
@@ -225,15 +233,14 @@ app.post('/flightTriggerResponse', function(req, res) { //new function
 
 //after, return results from new table.
 
-  var query = `INSERT INTO flight(Flight_ID,AIRLINE_ID,ORIGIN_AIRPORT,DESTINATION_AIRPORT,YEAR,MONTH,DAY,TAIL_NUMBER,SCHEDULED_DEPARTURE,DEPARTURE_TIME,SCHEDULED_TIME,SCHEDULED_ARRIVAL,ARRIVAL_TIME)
-  VALUES ('${flightID}','${airlineID}','${originAirport}','${destinationAirport}',${year},${month},${day},'N400WN',${scheduledDeparture},${departureTime},${scheduledDeparture},${scheduledArrivalTime},${arrivalTime});
-  select * from flight where Flight_ID = 0007;`
+  var query = `INSERT INTO flight(Flight_ID,AIRLINE_ID,ORIGIN_AIRPORT,DESTINATION_AIRPORT,YEAR,MONTH,DAY,TAIL_NUMBER,SCHEDULED_DEPARTURE,DEPARTURE_TIME,SCHEDULED_TIME,SCHEDULED_ARRIVAL,ARRIVAL_TIME) VALUES (${req.body.data.flightID},'${req.body.data.airlineID}','${req.body.data.originAirport}','${req.body.data.destinationAirport}',${req.body.data.year},${req.body.data.month},${req.body.data.day},'N400WN',${req.body.data.scheduledDeparture},${req.body.data.departureTime},${req.body.data.scheduledDeparture},${req.body.data.scheduledArrivalTime},${req.body.data.arrivalTime});`
   connection.query(query, function(err, result, fields) {
     if (err) {
-      console.log("error in flight");
+      console.log(err);
       return;
     }
     else {
+      console.log("works")
     res.json(result)
     return;
     }
